@@ -10,5 +10,5 @@ type Toy struct {
 	Categories   []string
 	RecAge       string
 	Manufacturer string
-	isAvailable  bool
+	IsAvailable  bool
 }
