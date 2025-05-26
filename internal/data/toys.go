@@ -11,4 +11,5 @@ type Toy struct {
 	RecAge       string
 	Manufacturer string
 	IsAvailable  bool
+	CreatedAt    string
 }

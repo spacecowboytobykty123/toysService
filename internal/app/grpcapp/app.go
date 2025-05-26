@@ -77,7 +77,7 @@ func New(log *jsonlog.Logger, port int, toyService toygrpc.Toys) *App {
 		grpc.UnaryInterceptor(UnaryJWTInterceptor([]byte("secretKey"))),
 	)
 
-	toygrpc.Register(gRPCServer, toyService)
+	toygrpc.Register(gRPCServer, toyService, log)
 
 	return &App{
 		Log:        log,

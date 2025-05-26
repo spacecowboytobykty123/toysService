@@ -21,7 +21,7 @@ type Metadata struct {
 	TotalRecords int32
 }
 
-func (f Filters) calculateMetadata(totalRecords, page, pageSize int32) Metadata {
+func (f Filters) CalculateMetadata(totalRecords int, page, pageSize int32) Metadata {
 	if totalRecords == 0 {
 		return Metadata{}
 	}
@@ -31,15 +31,15 @@ func (f Filters) calculateMetadata(totalRecords, page, pageSize int32) Metadata 
 		PageSize:     pageSize,
 		FirstPage:    1,
 		LastPage:     int32(math.Ceil(float64(totalRecords) / float64(pageSize))),
-		TotalRecords: totalRecords,
+		TotalRecords: int32(totalRecords),
 	}
 }
 
-func (f Filters) limit() int32 {
+func (f Filters) Limit() int32 {
 	return f.PageSize
 }
 
-func (f Filters) offset() int32 {
+func (f Filters) Offset() int32 {
 	return (f.Page - 1) * f.PageSize
 }
 
@@ -52,7 +52,7 @@ func ValidateFilters(v *validator.Validator, f Filters) {
 	v.Check(validator.PermittedValue(f.Sort, f.SortSafelist...), "sort", "invalid sort type")
 }
 
-func (f Filters) sortColumn() string {
+func (f Filters) SortColumn() string {
 	for _, safeValue := range f.SortSafelist {
 		if f.Sort == safeValue {
 			return strings.TrimPrefix(f.Sort, "-")
@@ -62,7 +62,7 @@ func (f Filters) sortColumn() string {
 	panic("unsafe sort parameter: " + f.Sort)
 }
 
-func (f Filters) sortDirection() string {
+func (f Filters) SortDirection() string {
 	if strings.HasPrefix(f.Sort, "-") {
 		return "DESC"
 	}
