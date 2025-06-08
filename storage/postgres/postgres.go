@@ -7,6 +7,7 @@ import (
 	"fmt"
 	"github.com/lib/pq"
 	"github.com/spacecowboytobykty123/toysProto/gen/go/toys"
+	"log"
 	"strings"
 	"time"
 	"toysService/internal/data"
@@ -30,8 +31,25 @@ type StorageDetails struct {
 	MaxIdleTime  string
 }
 
-func OpenDB(details StorageDetails, log *jsonlog.Logger) (*Storage, error) {
-	db, err := sql.Open("postgres", details.DSN)
+func OpenDB(details StorageDetails, logger *jsonlog.Logger) (*Storage, error) {
+	var db *sql.DB
+	var err error
+	for i := 0; i < 10; i++ {
+		db, err = sql.Open("postgres", details.DSN)
+		if err == nil {
+			err = db.Ping()
+		}
+		if err == nil {
+			break
+		}
+		time.Sleep(2 * time.Second)
+		log.Printf("retrying DB connection... (%d/10)", i+1)
+	}
+
+	if err != nil {
+
+		log.Fatal("failed to connect to database after retries:", err)
+	}
 
 	if err != nil {
 		return nil, err
@@ -52,7 +70,7 @@ func OpenDB(details StorageDetails, log *jsonlog.Logger) (*Storage, error) {
 	}
 	return &Storage{
 		db:  db,
-		log: log,
+		log: logger,
 	}, err
 }
 
